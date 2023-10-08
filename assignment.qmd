@@ -1,6 +1,6 @@
 ---
 title: "R Assignment #3"
-author: "Put Your Name Here"
+author: "Yutong Jiang"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 format:
   html:
@@ -44,6 +44,26 @@ Write your code using grouping in the chunks below to help answer the following 
 
 ```{r}
 
+#how many -> number, rather than percentage
+#favor impeachment, provided "for_impeachment"
+#"for_impeachment" provides yes or no.
+#aggregate: use count function to calculate how many members in the dataset. select()
+#spent 25mins
+
+#question1 <- impeach %>% 
+ # table(impeach$for_impeachment)
+ # filter(for_impeachment == "YES")
+ # group_by(for_impeachment) %>% 
+#  summarise(for_impeachment_total = sum(for_impeachment == "YES"))
+# question1
+
+#two ways according to chatgpt, one shows a basic yes and no with the numbers, the other shows graphic presentation.
+
+question1 <- #table(impeach$for_impeachment)
+barplot(table(impeach$for_impeachment), main="Impeachment Opinion", xlab="Opinion", ylab="Count", col=c("red", "blue"))
+question1
+
+
 
 
 
@@ -59,9 +79,12 @@ You'll want to ensure you do the grouping on both columns together, e.g. `group_
 
 
 
-
-
-
+Question2 <- impeach %>%
+  filter(party == "D") %>%   
+  mutate(gdp_above_national == "above", "below") %>%
+  group_by(for_impeachment, gdp_above_national) %>%
+  summarise(count = n())
+Question2
 
 
 
@@ -72,6 +95,12 @@ You'll want to ensure you do the grouping on both columns together, e.g. `group_
 
 ```{r}
 
+Question3 <- impeach %>%
+ # filter(party == "D") %>%   
+  mutate(pct_bachelors_compared_to_national == "above", "below") %>%
+  group_by(pct_bachelors_compared_to_national) %>%
+  summarise(count = n())
+Question3
 
 
 
@@ -91,7 +120,10 @@ In other words, you want to end up with the calculated mean for what that percen
 
 ```{r}
 
-
+Question4 <- impeach %>%
+  group_by(for_impeachment) %>%
+  summarise(mean_pct_bachelors = mean(pct_bachelors, na.rm = TRUE))
+Question4
 
 
 
@@ -106,7 +138,10 @@ The relevant column for that is `trump_percent`.
 
 ```{r}
 
-
+Question5 <- impeach %>%
+  group_by(for_impeachment) %>%
+  summarise(mean_trump_percent = mean(trump_percent, na.rm = TRUE))
+Question5
 
 
 
@@ -123,7 +158,11 @@ The relevant column for that is `trump_percent`.
 
   
 
-
+Question6 <- impeach %>%
+  filter(for_impeachment == "YES") %>%
+  group_by(margin_flag_2018) %>%
+  summarise(count = n())
+Question6
 
 
 
@@ -135,8 +174,14 @@ The relevant column for that is `trump_percent`.
 
 ```{r}
 
-  
+  #6)  Filter out only the members who are a no for impeachment. Then of those "no" member, how many won their 2018 election by less than 5 percentage points (`margin_flag_2018`) vs. more?
 
+
+Question7 <- impeach %>%
+  filter(for_impeachment == "NO") %>%
+  group_by(margin_flag_2018) %>%
+  summarise(count = n())
+Question7
 
 
 
@@ -150,6 +195,18 @@ The relevant column for that is `trump_percent`.
 Use the mutate() function to create two new columns: one that extracts the year from date_announced, and a second that extracts the month.
 
 ```{r}
+#Question8 <- impeach %>%
+ # filter(for_impeachment == "YES") %>%
+  #mutate(year_date_announced == )
+  #group_by(margin_flag_2018) %>%
+  ##Question8
+
+Question8 <- impeach %>%
+  filter(for_impeachment == "YES") %>%
+  mutate(year_announced = year(date_announced),
+         month_announced = month(date_announced)) %>%
+  select(for_impeachment, year_announced, month_announced)
+Question8
 
   
 
@@ -166,7 +223,15 @@ Use the mutate() function to create two new columns: one that extracts the year 
 ```{r}
 
   
-
+Question9 <- impeach %>%
+  filter(for_impeachment == "YES", party == "D") %>%
+  mutate(year_announced = year(date_announced),
+         month_announced = month(date_announced)) %>%
+  select(for_impeachment, year_announced, month_announced) %>%
+  group_by(year_announced, month_announced) %>%
+   summarise(count = n())%>%
+arrange(year_announced, month_announced)  
+Question9
 
 
 
